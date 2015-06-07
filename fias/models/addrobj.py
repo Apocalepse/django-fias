@@ -9,6 +9,8 @@ from fias.fields import UUIDField
 from fias.models.common import June2016Update
 from fias.models.status import CenterSt, CurentSt, OperStat
 
+from fias.models.common import Common
+from fias.models.socrbase import SocrBase
 
 __all__ = ['AddrObj']
 
@@ -90,3 +92,7 @@ class AddrObj(June2016Update):
 
     def full_address(self):
         return self.full_name(5)
+
+    def full_sname(self):
+        full_scname = SocrBase.objects.get(scname=self.shortname, level=self.aolevel)
+        return full_scname.socrname
