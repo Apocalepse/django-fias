@@ -90,3 +90,7 @@ class AddrObj(June2016Update):
 
     def full_address(self):
         return self.full_name(5)
+
+    def full_sname(self):
+        full_scname = SocrBase.objects.get(scname=self.shortname, level=self.aolevel)
+        return full_scname.socrname
