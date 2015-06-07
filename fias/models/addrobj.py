@@ -9,6 +9,8 @@ from fias.fields import UUIDField
 from fias.models.common import June2016Update
 from fias.models.status import CenterSt, CurentSt, OperStat
 
+from fias.models.common import Common
+from fias.models.socrbase import SocrBase
 
 __all__ = ['AddrObj']
 
