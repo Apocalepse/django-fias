@@ -5,10 +5,14 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms import widgets
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_language
+from django.utils.translation import get_language, force_text
 
-from django_select2.util import convert_to_js_str
 from django_select2.widgets import get_select2_css_libs, get_select2_heavy_js_libs, HeavySelect2Widget
+
+
+def convert_to_js_str(val):
+    val = force_text(val).replace('\'', '\\\'')
+    return u"'%s'" % val
 
 
 def get_js_libs():
@@ -39,8 +43,8 @@ class AddressSelect2(HeavySelect2Widget):
         'width': '50%',
     }
 
-    def render_inner_js_code(self, id_, name, value, attrs=None, choices=(), *args):
-        js = super(AddressSelect2, self).render_inner_js_code(id_, name, value, attrs, choices, *args)
+    def render_inner_js_code(self, id_, *args):
+        js = super(AddressSelect2, self).render_inner_js_code(id_, *args)
         js += ("$('#{0}')"
                ".on('select2-open', fias.onOpen)"
                ".on('select2-selecting', fias.onSelecting)"

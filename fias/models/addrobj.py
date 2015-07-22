@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 import six
-
+from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
 from django.db import models
 
@@ -11,9 +11,10 @@ from fias.fields import UUIDField
 from fias.models.common import Common
 from fias.models.socrbase import SocrBase
 
+
 __all__ = ['AddrObj']
 
-
+@python_2_unicode_compatible
 class AddrObj(Common):
 
     class Meta:
@@ -25,10 +26,10 @@ class AddrObj(Common):
         ordering = ['aolevel', 'formalname']
 
     aoguid = UUIDField(primary_key=True)
-    parentguid = UUIDField(blank=True, null=True, auto=False, db_index=True)
+    parentguid = UUIDField(blank=True, null=True, db_index=True)
     aoid = UUIDField(db_index=True, unique=True)
-    previd = UUIDField(blank=True, null=True, auto=False)
-    nextid = UUIDField(blank=True, null=True, auto=False)
+    previd = UUIDField(blank=True, null=True)
+    nextid = UUIDField(blank=True, null=True)
 
     formalname = models.CharField(max_length=120, db_index=True)
     offname = models.CharField(max_length=120, blank=True, null=True)
@@ -50,12 +51,12 @@ class AddrObj(Common):
     code = models.CharField(max_length=17, blank=True, null=True)
     plaincode = models.CharField(max_length=15, blank=True, null=True)
 
-    actstatus = models.BooleanField()
+    actstatus = models.BooleanField(default=False)
     centstatus = models.PositiveSmallIntegerField()
     operstatus = models.PositiveSmallIntegerField()
     currstatus = models.PositiveSmallIntegerField()
 
-    livestatus = models.BooleanField()
+    livestatus = models.BooleanField(default=False)
 
     def full_name(self, depth=None, formal=False):
         assert isinstance(depth, six.integer_types), 'Depth must be integer'
@@ -76,7 +77,7 @@ class AddrObj(Common):
     def get_formal_name(self):
         return '{0} {1}'.format(self.shortname, self.formalname)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_natural_name()
 
     def full_address(self):

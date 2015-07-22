@@ -9,7 +9,10 @@ from fias.importer.table import Table
 from fias.models import Status, Version
 from lxml.etree import XMLSyntaxError
 import rarfile
-from urllib import urlretrieve
+try:
+    from urllib import urlretrieve
+except ImportError:
+    from urllib.request import urlretrieve
 
 
 class BadArchiveError(Exception):
@@ -62,7 +65,7 @@ class Archive(object):
     @property
     def dump_date(self):
         if self._date is None:
-            table = self.tables.items()[0][1]
+            table = list(self.tables.values())[0]
             self._date = table.date
         return self._date
 
