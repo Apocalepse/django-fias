@@ -7,12 +7,13 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
+from django_select2.forms import HeavySelect2Mixin
 
 from fias import forms
 from fias.config import FIAS_DATABASE_ALIAS, FIAS_SUGGEST_VIEW
 
 
-class AddressField(ForeignKey):
+class AddressField(ForeignKey, HeavySelect2Mixin):
 
     def __init__(self, to='fias.AddrObj', **kwargs):
         ForeignKey.__init__(self, to, **kwargs)
