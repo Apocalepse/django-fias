@@ -7,7 +7,9 @@ from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language, force_text
 
-from django_select2.widgets import get_select2_css_libs, get_select2_heavy_js_libs, HeavySelect2Widget
+# from django_select2.widgets import get_select2_css_libs, get_select2_heavy_js_libs, HeavySelect2Widget
+from django_select2.forms import HeavySelect2Widget
+from django_select2.conf import settings
 
 
 def convert_to_js_str(val):
@@ -16,7 +18,8 @@ def convert_to_js_str(val):
 
 
 def get_js_libs():
-    libs = get_select2_heavy_js_libs()
+    # libs = get_select2_heavy_js_libs()
+    libs = (settings.SELECT2_JS,)
 
     if settings.configured and settings.DEBUG:
         libs += ('fias/js/fias.js', )
@@ -37,7 +40,7 @@ class AddressSelect2(HeavySelect2Widget):
     class Media:
         extend = False
         js = get_js_libs()
-        css = {'screen': get_select2_css_libs()}
+        css = {'screen': (settings.SELECT2_CSS,)}
 
     options = {
         'width': '50%',
