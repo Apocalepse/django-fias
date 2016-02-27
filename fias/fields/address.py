@@ -13,7 +13,7 @@ from fias import forms
 from fias.config import SUGGEST_VIEW
 
 
-class AddressField(ForeignKey, HeavySelect2Mixin):
+class AddressField(HeavySelect2Mixin, ForeignKey):
 
     def __init__(self, to='fias.AddrObj', **kwargs):
         kwargs.setdefault('related_name', '+')
