@@ -2,15 +2,18 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.forms.models import ModelChoiceField
+from django.forms.fields import ChoiceField
 
-from django_select2.fields import HeavyModelSelect2ChoiceField
+# from django_select2.fields import HeavyModelSelect2ChoiceField
+from django_select2.forms import HeavySelect2Widget
 
 from fias import widgets
 
 
-class AddressSelect2Field(HeavyModelSelect2ChoiceField):
+class AddressSelect2Field(ModelChoiceField):
 
-    widget = widgets.AddressSelect2
+    # widget = widgets.AddressSelect2
+    widget = HeavySelect2Widget
 
     def __init__(self, *args, **kwargs):
         super(AddressSelect2Field, self).__init__(*args, **kwargs)
