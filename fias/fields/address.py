@@ -28,7 +28,7 @@ class AddressField(ForeignKey, HeavySelect2Mixin):
             'queryset': self.rel.to._default_manager.using(db),
             'to_field_name': self.rel.field_name,
             'form_class': forms.AddressSelect2Field,
-            'data_view': FIAS_SUGGEST_VIEW,
+            # 'data_view': FIAS_SUGGEST_VIEW,
         }
         defaults.update(kwargs)
 
