@@ -11,7 +11,7 @@ from django_select2.forms import HeavySelect2Mixin
 from fias import widgets
 
 
-class AddressSelect2Field(ModelChoiceField, HeavySelect2Mixin):
+class AddressSelect2Field(HeavySelect2Mixin, ModelChoiceField):
 
     widget = widgets.AddressSelect2
     # widget = HeavySelect2Widget
