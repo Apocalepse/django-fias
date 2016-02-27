@@ -6,11 +6,12 @@ from django.forms.fields import ChoiceField
 
 # from django_select2.fields import HeavyModelSelect2ChoiceField
 from django_select2.forms import HeavySelect2Widget
+from django_select2.forms import HeavySelect2Mixin
 
 from fias import widgets
 
 
-class AddressSelect2Field(ModelChoiceField):
+class AddressSelect2Field(ModelChoiceField, HeavySelect2Mixin):
 
     # widget = widgets.AddressSelect2
     widget = HeavySelect2Widget
