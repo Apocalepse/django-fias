@@ -13,8 +13,8 @@ from fias import widgets
 
 class AddressSelect2Field(ModelChoiceField, HeavySelect2Mixin):
 
-    # widget = widgets.AddressSelect2
-    widget = HeavySelect2Widget
+    widget = widgets.AddressSelect2
+    # widget = HeavySelect2Widget
 
     def __init__(self, *args, **kwargs):
         super(AddressSelect2Field, self).__init__(*args, **kwargs)
