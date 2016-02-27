@@ -1,5 +1,5 @@
 django>=1.5
-django_select2>=4.3.2
+django_select2>=5.8.1
 rarfile
 six
 lxml
