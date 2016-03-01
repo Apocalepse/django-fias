@@ -1,19 +1,22 @@
-#coding: utf-8
-from __future__ import unicode_literals, absolute_import
-
+# -*- coding: utf-8 -*-
+import json
 from django.utils.text import force_text
-
-from django_select2.views import Select2View, NO_ERR_RESP
-
 from fias.models import AddrObj, SocrBase
+from django.http import Http404, JsonResponse
+from django.views.generic.base import View
+from django.views.generic import ListView
 
-EMPTY_RESULT = NO_ERR_RESP, False, ()
+
+EMPTY_RESULT = 'nil', False, ()
 
 
-class SuggestAddressViewStepByStep(Select2View):
+class SuggestAddressViewStepByStep(View):
 
-    def get_results(self, request, term, page, context):
+    def get(self, request, *args, **kwargs):
         filter_params = None
+        term = request.GET.get('term', None)
+        if not term:
+            raise Http404
 
         level = 0
         result_parts = []
@@ -110,55 +113,58 @@ class SuggestAddressViewStepByStep(Select2View):
 
         if result:
             if prefix:
-                return NO_ERR_RESP, False, ((k, '{0}, {1}'.format(prefix, v)) for k, v in result)
+                return JsonResponse({'err': 'nil', 'results': ((k, '{0}, {1}'.format(prefix, v)) for k, v in result)})
 
-            return NO_ERR_RESP, False, result
+            return JsonResponse({'err': 'nil', 'results': result})
 
         if filter_params is not None:
             result = AddrObj.objects.order_by('aolevel').filter(**filter_params)[:10]
 
             if prefix:
-                return (
-                    NO_ERR_RESP,
-                    False,
-                    ((force_text(l.pk), '{0}, {1}'.format(prefix, l), {'level': l.aolevel}) for l in result)
-                )
+                return JsonResponse({
+                    'err': 'nil',
+                    'results': ((force_text(l.pk), '{0}, {1}'.format(prefix, l), {'level': l.aolevel}) for l in result)
+                })
             else:
-                return (
-                    NO_ERR_RESP,
-                    False,
-                    ((force_text(l.pk), l.full_name(5, True), {'level': l.aolevel}) for l in result)
-                )
+                return JsonResponse({
+                    'err': 'nil',
+                    'results': ((force_text(l.pk), l.full_name(5, True), {'level': l.aolevel}) for l in result)
+                })
 
         return EMPTY_RESULT
 
 
-class SuggestBySphinx(Select2View):
+class SuggestBySphinx(View):
 
-    def get_results(self, request, term, page, context):
+    def get(self, request, *args, **kwargs):
         from fias.sphinxit import search
+        term = request.GET.get('term', None)
+        if not term:
+            raise Http404
 
-        query = search().match(term + '*').options(field_weights={'formalname': 100,
-                                                                  'fullname': 80}).limit(0, 50)
+        query = search().match(term + '*').options(field_weights={'formalname': 100, 'fullname': 80}).limit(0, 50)
 
-        #Hack to bypass bug in sphixit. https://github.com/semirook/sphinxit/issues/16
-        query._nodes.OrderBy.orderings = [u'item_weight DESC', u'weight() DESC']
+        # Hack to bypass bug in sphixit. https://github.com/semirook/sphinxit/issues/16
+        
+        # TODO не смог разобраться, у меня регалось на последний weight()
+        # query._nodes.OrderBy.orderings = [u'item_weight DESC', u'weight() DESC']
+        query._nodes.OrderBy.orderings = [u'item_weight DESC']
 
         result = query.ask()
 
         items = result['result']['items']
 
         if len(items):
-            return (
-                NO_ERR_RESP,
-                False,
-                ((l['aoguid'], l['fullname'], {'level': l['aolevel']}) for l in items)
-            )
+            results = [{'id': l['aoguid'], 'text': l['fullname']} for l in items]
+            return JsonResponse({
+                'err': 'nil',
+                'results': results
+            })
 
         return EMPTY_RESULT
 
 
-class GetAreasListView(Select2View):
+class GetAreasListView(ListView):
 
     def get(self, request, *args, **kwargs):
         if request.method == 'GET':
@@ -166,7 +172,7 @@ class GetAreasListView(Select2View):
             if guid is None:
                 return self.render_to_response(self._results_to_context(('missing guid', False, [], )))
             if not guid:
-                return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
+                return self.render_to_response(self._results_to_context(('nil', False, [], )))
 
         else:
             return self.render_to_response(self._results_to_context(('not a get request', False, [], )))
@@ -179,18 +185,18 @@ class GetAreasListView(Select2View):
         city = self._get_city_obj(address)
 
         if city is None:
-            return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
+            return self.render_to_response(self._results_to_context(('nil', False, [], )))
 
         areas = AddrObj.objects.filter(parentguid=city.pk, shortname='р-н')
 
         if areas:
             return self.render_to_response(self._results_to_context((
-                NO_ERR_RESP,
+                'nil',
                 False,
                 ((force_text(a.pk), force_text(a)) for a in areas), ))
             )
 
-        return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
+        return self.render_to_response(self._results_to_context(('nil', False, [], )))
 
     def _get_city_obj(self, obj):
         if obj.shortname != 'г' and obj.aolevel > 1:
