@@ -65,7 +65,7 @@ class FIASAddressWithArea(FIASAddress):
         abstract = True
 
     # area = ChainedAreaField(AddrObj, address_field='address', related_name='+')
-    area = models.ForeignKey(AddrObj, address_field='address', related_name='+')
+    area = models.ForeignKey(AddrObj, related_name='+')
 
 
 class FIASHouse(models.Model):
