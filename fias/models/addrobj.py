@@ -94,5 +94,8 @@ class AddrObj(June2016Update):
         return self.full_name(5)
 
     def full_sname(self):
-        full_scname = SocrBase.objects.get(scname=self.shortname, level=self.aolevel)
-        return full_scname.socrname
+        try:
+            full_scname = SocrBase.objects.get(scname=self.shortname, level=self.aolevel)
+            return full_scname.socrname
+        except SocrBase.DoesNotExist:
+            return self.get_natural_name()
