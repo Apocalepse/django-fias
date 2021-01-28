@@ -8,13 +8,13 @@ from django.db import router
 from django.db import models
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
-from django_select2.forms import HeavySelect2Mixin
+# from django_select2.forms import HeavySelect2Mixin
 
 from fias import forms
 from fias.config import SUGGEST_VIEW
 
 
-class AddressField(HeavySelect2Mixin, ForeignKey):
+class AddressField(ForeignKey):
 
     def __init__(self, to='fias.AddrObj', on_delete=models.CASCADE, **kwargs):
         kwargs.setdefault('related_name', '+')

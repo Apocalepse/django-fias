@@ -5,7 +5,7 @@ import datetime
 from django.conf import settings
 from django import db
 from django.db import IntegrityError
-from progress.helpers import WritelnMixin
+from pip._vendor.progress.helpers import WritelnMixin
 from sys import stderr
 
 from fias.importer.signals import (
